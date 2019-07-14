@@ -1,0 +1,14 @@
+.searchPage {
+  text-align: left;
+  height: 100%;
+  width: 100%;
+}
+
+.header {
+  height: 50px;
+  line-height: 50px;
+}
+
+.tag {
+  margin-left: 20px;
+}

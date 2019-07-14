@@ -1,0 +1,39 @@
+.secenes {
+  font-size: 14px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.category .row {
+  margin-bottom: 14px;
+}
+
+.scenesPic {
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+  margin: 4px;
+}
+
+.scenesPic .pic {
+  width: 100%;
+}
+
+.block {
+  position: absolute;
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+}
+
+.scenesPicContainer {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+
+.pic {
+  width: 100%;
+  display: inline-block;
+}

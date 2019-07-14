@@ -1,0 +1,45 @@
+.actor {
+  font-size: 14px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.category .row {
+  margin-bottom: 14px;
+}
+
+.actorPic {
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+  margin: 4px;
+}
+
+.actorContainer {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+
+.actorPic .pic {
+  width: 100%;
+  display: inline-block;
+}
+
+.block {
+  position: absolute;
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+}
+
+.noData {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ccc;
+  width: 100%;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+}
