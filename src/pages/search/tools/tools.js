@@ -30,7 +30,7 @@ class Scenes extends React.Component {
   jump (id) {
     fetch({
       method: 'post',
-      url: '/mock/retrieve/prop/queryDetail',
+      url: 'http://localhost:8080/retrieve/prop/queryDetail',
       data: JSON.stringify({
         id
       }),
@@ -51,11 +51,12 @@ class Scenes extends React.Component {
   }
 
   getToolsList (num) {
+    console.log('查询工具')
     this.setState({
       pageNum: num
     })
     fetch({
-      url: '/mock/retrieve/prop/searchProp',
+      url: 'http://localhost:8080/retrieve/prop/searchProp',
       method: 'post',
       data: JSON.stringify({
         labelList: this.state.labelTags.length?this.state.labelTags:null,
@@ -76,7 +77,7 @@ class Scenes extends React.Component {
   componentDidMount () {
     fetch({
       method: 'post',
-      url: '/mock/retrieve/prop/initData'
+      url: 'http://localhost:8080/retrieve/prop/initData'
     }).then(res => {
       // console.log(res)
       this.setState({

@@ -10,10 +10,6 @@ const sexList = ['男', '女']
 
 const ageRangeFromServer = ['0-3', '4-10', '11-16', '17-25', '26-35', '36-45', '46-60', '60-']
 
-const nationalFromServer = ['中国', '日本', '美国', '俄国', '韩国']
-
-const hobbyFromServer = ['舞蹈', '唱歌', '跑酷', '英语']
-
 function serilizeAgeList (arr) {
   const year = new Date().getFullYear()
   const newArr = arr.map(val => {
@@ -42,12 +38,27 @@ class Actors extends React.Component {
     ageTags: [],
     nationalTags: [],
     hobbyTags: [],
+    hobbyList: [],
+    countryList: [],
     // 演员列表搜索结果
     actorList: [],
     pageNum: 1,
     pageSize: 1,
     total: 0
   }
+
+  componentDidMount () {
+    fetch({
+      url: 'http://localhost:8080/retrieve/actor/initData',
+      method: 'post',
+    }).then(res => {
+      this.setState({
+        hobbyList: res.data.data.hobby,
+        countryList: res.data.data.country
+      })
+    })
+  }
+
   handleSexSelect (tag, checked) {
     const { sexTags } = this.state
     const nextSelectedTags = checked ? [...sexTags, tag] : sexTags.filter(t => t !== tag)
@@ -96,7 +107,7 @@ class Actors extends React.Component {
     }
     // console.log(this.state.hobbyTags===0?null:this.state.hobbyTags)
     fetch({
-      url: '/mock/retrieve/actor/searchActor',
+      url: 'http://localhost:8080/retrieve/actor/searchActor',
       method: 'post',
       data: JSON.stringify({
         sex,
@@ -159,7 +170,7 @@ class Actors extends React.Component {
               国籍：
             </Col>
             <Col span={20}>
-              {nationalFromServer.map(tag => (
+              {this.state.countryList.map(tag => (
                 <CheckableTag
                   key={tag}
                   checked={this.state.nationalTags.indexOf(tag) > -1}
@@ -175,7 +186,7 @@ class Actors extends React.Component {
               特长：
             </Col>
             <Col span={20}>
-              {hobbyFromServer.map(tag => (
+              {this.state.hobbyList.map(tag => (
                 <CheckableTag
                   key={tag}
                   checked={this.state.hobbyTags.indexOf(tag) > -1}

@@ -6,11 +6,10 @@ const NODE_ENV = process.env.NODE_ENV
 let hosturl
 switch (NODE_ENV) {
   case 'development':
-      // http://119.254.229.172:8000
-    hosturl = 'http://119.254.229.172:8000'
+    hosturl = 'http://192.168.43.189:8080'
     break
   case 'production':
-    hosturl = 'www.baidu.com'
+    hosturl = 'http://192.168.43.189:8080'
     break
 }
 console.log(NODE_ENV)

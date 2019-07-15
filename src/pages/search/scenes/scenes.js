@@ -67,7 +67,7 @@ class Scenes extends React.Component {
       pageNum: num
     })
     fetch({
-      url: '/mock/retrieve/area/searchArea',
+      url: 'http://localhost:8080/retrieve/area/searchArea',
       method: 'post',
       data: JSON.stringify({
         natureList: this.state.propsTags.length?this.state.propsTags:null,
@@ -91,7 +91,7 @@ class Scenes extends React.Component {
   componentDidMount () {
     fetch({
       method: 'post',
-      url: '/mock/retrieve/area/initData'
+      url: 'http://localhost:8080/retrieve/area/initData'
     }).then(res => {
       console.log(res)
       this.setState({
