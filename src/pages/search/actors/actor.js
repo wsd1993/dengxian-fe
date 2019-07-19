@@ -43,13 +43,13 @@ class Actors extends React.Component {
     // 演员列表搜索结果
     actorList: [],
     pageNum: 1,
-    pageSize: 1,
+    pageSize: 20,
     total: 0
   }
 
   componentDidMount () {
     fetch({
-      url: 'http://localhost:8080/retrieve/actor/initData',
+      url: '/api/retrieve/actor/initData',
       method: 'post',
     }).then(res => {
       this.setState({
@@ -107,7 +107,7 @@ class Actors extends React.Component {
     }
     // console.log(this.state.hobbyTags===0?null:this.state.hobbyTags)
     fetch({
-      url: 'http://localhost:8080/retrieve/actor/searchActor',
+      url: '/api/retrieve/actor/searchActor',
       method: 'post',
       data: JSON.stringify({
         sex,

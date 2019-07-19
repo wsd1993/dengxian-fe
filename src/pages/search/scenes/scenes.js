@@ -67,7 +67,7 @@ class Scenes extends React.Component {
       pageNum: num
     })
     fetch({
-      url: 'http://localhost:8080/retrieve/area/searchArea',
+      url: '/api/retrieve/area/searchArea',
       method: 'post',
       data: JSON.stringify({
         natureList: this.state.propsTags.length?this.state.propsTags:null,
@@ -91,7 +91,7 @@ class Scenes extends React.Component {
   componentDidMount () {
     fetch({
       method: 'post',
-      url: 'http://localhost:8080/retrieve/area/initData'
+      url: '/api/retrieve/area/initData'
     }).then(res => {
       console.log(res)
       this.setState({

@@ -9,17 +9,17 @@ switch (NODE_ENV) {
     hosturl = 'http://192.168.43.189:8080'
     break
   case 'production':
-    hosturl = 'http://192.168.43.189:8080'
+    hosturl = 'http://localhost:8080'
     break
 }
-console.log(NODE_ENV)
+console.log(NODE_ENV, hosturl)
 module.exports = function(app) {
   app.use(
     proxy("/api", {
-      target: 'http://192.168.43.189:8080',
+      target: hosturl,
       changeOrigin: true,
       pathRewrite: {
-        "^/api": 'http://192.168.43.189:8080'
+        "^/api": hosturl
       }
     })
   )

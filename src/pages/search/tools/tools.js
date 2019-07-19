@@ -30,7 +30,7 @@ class Scenes extends React.Component {
   jump (id) {
     fetch({
       method: 'post',
-      url: 'http://localhost:8080/retrieve/prop/queryDetail',
+      url: '/api/retrieve/prop/queryDetail',
       data: JSON.stringify({
         id
       }),
@@ -56,7 +56,7 @@ class Scenes extends React.Component {
       pageNum: num
     })
     fetch({
-      url: 'http://localhost:8080/retrieve/prop/searchProp',
+      url: '/api/retrieve/prop/searchProp',
       method: 'post',
       data: JSON.stringify({
         labelList: this.state.labelTags.length?this.state.labelTags:null,
@@ -77,7 +77,7 @@ class Scenes extends React.Component {
   componentDidMount () {
     fetch({
       method: 'post',
-      url: 'http://localhost:8080/retrieve/prop/initData'
+      url: '/api/retrieve/prop/initData'
     }).then(res => {
       // console.log(res)
       this.setState({
