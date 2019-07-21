@@ -22,10 +22,11 @@ class Scenes extends React.Component {
     total: 0,
     toolsList: []
   }
-  handleLabelSelect (tag, checked) {
+  async handleLabelSelect (tag, checked) {
     const { labelTags } = this.state
     const nextSelectedTags = checked ? [...labelTags, tag] : labelTags.filter(t => t !== tag)
-    this.setState({ labelTags: nextSelectedTags })
+    await this.setState({ labelTags: nextSelectedTags })
+    this.getToolsList(1)
   }
   jump (id) {
     fetch({
@@ -38,21 +39,19 @@ class Scenes extends React.Component {
         'Content-Type': 'application/json'
       }
     }).then(res => {
-      console.log(res)
       window.open(res.data.data.url)
     })
   }
   
-  handlePageChange (val) {
-    this.setState({
+  async handlePageChange (val) {
+    await this.setState({
       pageNum: val,
     })
     this.getToolsList(val)
   }
 
-  getToolsList (num) {
-    console.log('查询工具')
-    this.setState({
+  async getToolsList (num) {
+    await this.setState({
       pageNum: num
     })
     fetch({

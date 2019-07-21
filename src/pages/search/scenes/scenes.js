@@ -31,46 +31,51 @@ class Scenes extends React.Component {
     pageSize: 20,
     total: 0
   }
-  handlePropSelect (tag, checked) {
+  async handlePropSelect (tag, checked) {
     const { propTags } = this.state
     const nextSelectedTags = checked ? [...propTags, tag] : propTags.filter(t => t !== tag)
-    this.setState({ propTags: nextSelectedTags })
+    await this.setState({ propTags: nextSelectedTags })
+    this.getSecnesList(1)
   }
   
-  handleTimeSelect (tag, checked) {
+  async handleTimeSelect (tag, checked) {
     const { timeTags } = this.state
     const nextSelectedTags = checked ? [...timeTags, tag] : timeTags.filter(t => t !== tag)
-    this.setState({ timeTags: nextSelectedTags })
+    await this.setState({ timeTags: nextSelectedTags })
+    this.getSecnesList(1)
   }
 
-  handleTypeSelect (tag, checked) {
+  async handleTypeSelect (tag, checked) {
     const { typeTags } = this.state
     const nextSelectedTags = checked ? [...typeTags, tag] : typeTags.filter(t => t !== tag)
-    this.setState({ typeTags: nextSelectedTags })
+    await this.setState({ typeTags: nextSelectedTags })
+    this.getSecnesList(1)
   }
 
-  handleCharacSelect (tag, checked) {
+  async handleCharacSelect (tag, checked) {
     const { characTags } = this.state
     const nextSelectedTags = checked ? [...characTags, tag] : characTags.filter(t => t !== tag)
-    this.setState({ characTags: nextSelectedTags })
+    await this.setState({ characTags: nextSelectedTags })
+    this.getSecnesList(1)
   }
 
-  handlePageChange (val) {
-    this.setState({
+  async handlePageChange (val) {
+    await this.setState({
       pageNum: val,
     })
     this.getSecnesList(val)
   }
 
-  getSecnesList (num) {
-    this.setState({
+  async getSecnesList (num) {
+    await this.setState({
       pageNum: num
     })
+    // console.log(this.state.propTags)
     fetch({
       url: '/api/retrieve/area/searchArea',
       method: 'post',
       data: JSON.stringify({
-        natureList: this.state.propsTags.length?this.state.propsTags:null,
+        natureList: this.state.propTags.length?this.state.propTags:null,
         yearsList: this.state.timeTags.length?this.state.timeTags:null,
         typeList: this.state.typeTags.length?this.state.typeTags:null,
         featureList: this.state.characTags.length?this.state.characTags:null,
@@ -93,7 +98,6 @@ class Scenes extends React.Component {
       method: 'post',
       url: '/api/retrieve/area/initData'
     }).then(res => {
-      console.log(res)
       this.setState({
         propsList: res.data.data.nature,
         timeList: res.data.data.years,
@@ -177,10 +181,11 @@ class Scenes extends React.Component {
         <div className="actorList">
           {this.state.scenesList.map(item => (
             <div key={item.id} className={styles.scenesPic}>
-            <Link className={styles.scenesPicContainer} to={{pathname: `scenes/${item.id}`, query: {imgUrl: item.imgPath}}}>
-              <img className={styles.pic} src={item.imgPath} alt="" />
-            </Link>
-          </div>
+              <Link className={styles.scenesPicContainer} to={{pathname: `scenes/${item.id}`, query: {imgUrl: item.imgPath}}}>
+                <img className={styles.pic} src={item.imgPath} alt="" />
+              </Link>
+              <div style={{textAlign: 'center'}}>名称：{item.name}  (性质：{item.nature})</div>
+            </div>
           ))}
         </div>
         <div className={styles.block}>

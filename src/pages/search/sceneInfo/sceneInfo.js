@@ -94,6 +94,30 @@ class SceneInfo extends React.Component {
               </Row>
               <Row className={styles.disc}>
                 <Col span={3}>
+                  信息：
+                </Col>
+                <Col span={19}>
+                  {this.state.information}
+                </Col>
+              </Row>
+              <Row className={styles.disc}>
+                <Col span={3}>
+                  地址：
+                </Col>
+                <Col span={19}>
+                  {this.state.address}
+                </Col>
+              </Row>
+              <Row className={styles.disc}>
+                <Col span={3}>
+                  费用：
+                </Col>
+                <Col span={19}>
+                  {this.state.expense}
+                </Col>
+              </Row>
+              <Row className={styles.disc}>
+                <Col span={3}>
                   星级：
                 </Col>
                 <Col span={19}>

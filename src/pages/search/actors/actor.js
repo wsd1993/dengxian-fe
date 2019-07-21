@@ -15,11 +15,15 @@ function serilizeAgeList (arr) {
   const newArr = arr.map(val => {
     const tempArr = val.split('-')
     for (let i = 0; i < tempArr.length; i++) {
-      tempArr[i] = year - Number(tempArr[i])
+      if (tempArr[i] === '') {
+        tempArr[i] = 0
+      } else {
+        tempArr[i] = year - Number(tempArr[i])
+      }
     }
     return {
-      start: tempArr[1],
-      end: tempArr[0]
+      startTime: tempArr[1],
+      endTime: tempArr[0]
     }
   })
   return newArr
@@ -59,37 +63,41 @@ class Actors extends React.Component {
     })
   }
 
-  handleSexSelect (tag, checked) {
+  async handleSexSelect (tag, checked) {
     const { sexTags } = this.state
     const nextSelectedTags = checked ? [...sexTags, tag] : sexTags.filter(t => t !== tag)
-    this.setState({ sexTags: nextSelectedTags })
+    await this.setState({ sexTags: nextSelectedTags })
+    this.getActorList(1)
   }
-  handlePageChange (val) {
-    this.setState({
+  async handlePageChange (val) {
+    await this.setState({
       pageNum: val
     })
     this.getActorList(val)
   }
-  handleAgeSelect (tag, checked) {
+  async handleAgeSelect (tag, checked) {
     const { ageTags } = this.state
     const nextSelectedTags = checked ? [...ageTags, tag] : ageTags.filter(t => t !== tag)
-    this.setState({ ageTags: nextSelectedTags })
+    await this.setState({ ageTags: nextSelectedTags })
+    this.getActorList(1)
   }
 
-  handleNationalSelect (tag, checked) {
+  async handleNationalSelect (tag, checked) {
     const { nationalTags } = this.state
     const nextSelectedTags = checked ? [...nationalTags, tag] : nationalTags.filter(t => t !== tag)
-    this.setState({ nationalTags: nextSelectedTags })
+    await this.setState({ nationalTags: nextSelectedTags })
+    this.getActorList(1)
   }
 
-  handleHobbySelect (tag, checked) {
+  async handleHobbySelect (tag, checked) {
     const { hobbyTags } = this.state
     const nextSelectedTags = checked ? [...hobbyTags, tag] : hobbyTags.filter(t => t !== tag)
-    this.setState({ hobbyTags: nextSelectedTags })
+    await this.setState({ hobbyTags: nextSelectedTags })
+    this.getActorList(1)
   }
 
-  getActorList (num) {
-    this.setState({
+  async getActorList (num) {
+    await this.setState({
       pageNum: num
     })
     const newAgeList = serilizeAgeList(this.state.ageTags)

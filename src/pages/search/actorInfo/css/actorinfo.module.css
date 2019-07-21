@@ -7,14 +7,18 @@
 }
 
 .actorMainPic {
-  width: 200px;
+  width: 400px;
   display: inline-block;
 }
 
 .actorExtraPic {
   display: inline-block;
-  width: 250px;
-  height: 200px;
+  margin: 4px;
+}
+
+.video {
+  width: 600px;
+  height: 800px;
 }
 
 .noData {

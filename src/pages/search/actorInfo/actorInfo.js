@@ -28,7 +28,7 @@ class ActorInfo extends React.Component {
     const id = this.props.location.pathname.split('/')[2]
     // console.log(url)
     fetch({
-      url: '/api/retrieve/actor/queryDetail',
+      url: 'http://localhost:8080/retrieve/actor/queryDetail',
       method: 'post',
       data: JSON.stringify({
         id
@@ -58,6 +58,14 @@ class ActorInfo extends React.Component {
                 </Col>
                 <Col span={19}>
                   {this.state.name}
+                </Col>
+              </Row>
+              <Row>
+                <Col span={3}>
+                  性别：
+                </Col>
+                <Col span={19}>
+                  {this.state.sex==1?'男':'女'}
                 </Col>
               </Row>
               <Row>
@@ -122,7 +130,7 @@ class ActorInfo extends React.Component {
             <Col span={12}>
               <div className={styles.title}>视频</div>
               <div className={styles.video}>
-                <video width="300px" height="500px" controls="controls" autoPlay="autoplay" src={this.state.videoUrl}></video>
+                <video width="600px" height="800px" controls="controls" autoPlay="autoplay" src={this.state.videoUrl}></video>
               </div>
             </Col>
           </Row>

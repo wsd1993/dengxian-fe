@@ -9,10 +9,10 @@
 }
 
 .scenesPic {
-  width: 200px;
-  height: 200px;
+  width: 400px;
+  height: 300px;
   display: inline-block;
-  margin: 4px;
+  margin: 14px;
 }
 
 .scenesPic .pic {
@@ -28,7 +28,7 @@
 }
 
 .scenesPicContainer {
-  display: inline-block;
+  display: block;
   width: 100%;
   height: 100%;
 }
