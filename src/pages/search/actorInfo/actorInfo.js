@@ -28,7 +28,7 @@ class ActorInfo extends React.Component {
     const id = this.props.location.pathname.split('/')[2]
     // console.log(url)
     fetch({
-      url: 'http://localhost:8080/retrieve/actor/queryDetail',
+      url: 'api/retrieve/actor/queryDetail',
       method: 'post',
       data: JSON.stringify({
         id
