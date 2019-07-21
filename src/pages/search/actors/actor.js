@@ -113,7 +113,6 @@ class Actors extends React.Component {
     } else {
       sex = null
     }
-    // console.log(this.state.hobbyTags===0?null:this.state.hobbyTags)
     fetch({
       url: '/api/retrieve/actor/searchActor',
       method: 'post',

@@ -65,7 +65,7 @@ class ActorInfo extends React.Component {
                   性别：
                 </Col>
                 <Col span={19}>
-                  {this.state.sex==1?'男':'女'}
+                  {this.state.sex===1?'男':'女'}
                 </Col>
               </Row>
               <Row>
