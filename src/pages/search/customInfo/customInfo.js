@@ -1,37 +1,45 @@
 import React from 'react'
-import styles from './css/sceneInfo.module.css'
+import styles from './css/customInfo.module.css'
 import { withRouter } from 'react-router-dom'
-import { Button, Row, Col } from 'antd'
+import { Button, Row, Col, Divider } from 'antd'
 import { fetch } from '../../../fetch/fetch'
 
-class SceneInfo extends React.Component {
+function initSex (sex) {
+  if (sex === '1') {
+    return '男'
+  } else if (sex === '0') {
+    return '女'
+  } else {
+    return '男/女'
+  }
+}
+
+class CustomInfo extends React.Component {
   constructor (props) {
     super(props)
     this.back = this.back.bind(this)
   }
   back () {
-    this.props.history.push('/scenes')
+    this.props.history.push('/custom')
   }
   state = {
     name: '',
-    nature: '',
-    years: '',
+    sex: '',
+    age: '',
     type: '',
-    feature: '',
-    stage: '',
-    address: '',
-    information: '',
-    expense: '',
-    url: ''
+    label: '',
+    channel: '',
+    info: '',
+    imgList: [],
   }
   componentDidMount () {
     const id = this.props.location.pathname.split('/')[2]
     // console.log(url)
     fetch({
-      url: 'http://localhost:8080/retrieve/area/queryDetail',
+      url: 'http://localhost:8080/retrieve/custom/queryDetail',
       method: 'post',
       data: JSON.stringify({
-        id
+        customId: id
       }),
       headers:{
         'Content-Type': 'application/json'
@@ -40,7 +48,6 @@ class SceneInfo extends React.Component {
       this.setState({
         ...res.data.data
       })
-      console.log(this.state)
     })
   }
   render() {
@@ -62,23 +69,23 @@ class SceneInfo extends React.Component {
               </Row>
               <Row className={styles.disc}>
                 <Col span={3}>
-                  性质：
+                  性别：
                 </Col>
                 <Col span={19}>
-                  {this.state.nature}
+                  {initSex(this.state.sex)}
                 </Col>
               </Row>
               <Row className={styles.disc}>
                 <Col span={3}>
-                  年代：
+                  年龄：
                 </Col>
                 <Col span={19}>
-                  {this.state.years}
+                  {this.state.age}
                 </Col>
               </Row>
               <Row className={styles.disc}>
                 <Col span={3}>
-                  类型：
+                  类别：
                 </Col>
                 <Col span={19}>
                   {this.state.type}
@@ -86,61 +93,44 @@ class SceneInfo extends React.Component {
               </Row>
               <Row className={styles.disc}>
                 <Col span={3}>
-                  特点：
+                  类目：
                 </Col>
                 <Col span={19}>
-                  {this.state.feature}
+                  {this.state.label}
                 </Col>
               </Row>
               <Row className={styles.disc}>
                 <Col span={3}>
-                  信息：
+                  渠道：
                 </Col>
                 <Col span={19}>
-                  {this.state.information}
+                  {this.state.channel}
                 </Col>
               </Row>
               <Row className={styles.disc}>
                 <Col span={3}>
-                  地址：
+                  详细信息：
                 </Col>
                 <Col span={19}>
-                  {this.state.address}
+                  {this.state.info}
                 </Col>
               </Row>
-              <Row className={styles.disc}>
-                <Col span={3}>
-                  费用：
-                </Col>
-                <Col span={19}>
-                  {this.state.expense}
-                </Col>
-              </Row>
-              <Row className={styles.disc}>
-                <Col span={3}>
-                  星级：
-                </Col>
-                <Col span={19}>
-                  {this.state.stage}
-                </Col>
-              </Row>
-              <Row className={styles.disc}>
-                <Col span={3}>
-                  场地全景：
-                </Col>
-                <Col span={19}>
-                  <a href={this.state.url} target="_blank" rel="noopener noreferrer">{this.state.url}</a>
-                </Col>
-              </Row>
-            </Col>
-            <Col span={6}>
-              <img className={styles.sceneMainPic} src={this.props.location.query.imgUrl} alt="" />
             </Col>
           </Row>
+        </div>
+        <Divider />
+        <div style={{width: '100%'}}>
+          {
+            this.state.imgList.length?this.state.imgList.map((item, index) => (
+              <div key={index} className={styles.customInfoPic}>
+                <img className={styles.pic} src={item} alt="" />
+              </div>
+            )):<div className={styles.noData}>暂无数据</div>
+          }
         </div>
       </div>
     )
   }
 }
 
-export default withRouter(SceneInfo)
+export default withRouter(CustomInfo)

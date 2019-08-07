@@ -53,7 +53,7 @@ class Actors extends React.Component {
 
   componentDidMount () {
     fetch({
-      url: '/api/retrieve/actor/initData',
+      url: 'http://localhost:8080/retrieve/actor/initData',
       method: 'post',
     }).then(res => {
       this.setState({
@@ -61,6 +61,7 @@ class Actors extends React.Component {
         countryList: res.data.data.country
       })
     })
+    this.getActorList(1)
   }
 
   async handleSexSelect (tag, checked) {
@@ -114,7 +115,7 @@ class Actors extends React.Component {
       sex = null
     }
     fetch({
-      url: '/api/retrieve/actor/searchActor',
+      url: 'http://localhost:8080/retrieve/actor/searchActor',
       method: 'post',
       data: JSON.stringify({
         sex,

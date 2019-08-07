@@ -20,7 +20,16 @@
   width: 600px;
   height: 800px;
 }
+.pic {
+  width: 10%;
+  padding: 4px;
+  box-sizing: border-box;
+  display: inline-block;
+}
 
+.pic img {
+  width: 100%;
+}
 .noData {
   font-size: 16px;
   font-weight: 600;

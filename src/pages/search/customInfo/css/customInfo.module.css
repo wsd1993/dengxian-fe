@@ -1,0 +1,21 @@
+.sceneInfo {
+  padding: 0 20px;
+}
+
+.header {
+  margin-bottom: 10px;
+}
+
+.customInfoPic {
+  width: 10%;
+  display: inline-block;
+  padding: 4px;
+  box-sizing: border-box;
+}
+.pic {
+  width: 100%;
+}
+.disc {
+  height: 20px;
+  line-height: 20px;
+}

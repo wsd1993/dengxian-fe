@@ -28,7 +28,7 @@ class ActorInfo extends React.Component {
     const id = this.props.location.pathname.split('/')[2]
     // console.log(url)
     fetch({
-      url: 'api/retrieve/actor/queryDetail',
+      url: 'http://localhost:8080/retrieve/actor/queryDetail',
       method: 'post',
       data: JSON.stringify({
         id
@@ -51,7 +51,7 @@ class ActorInfo extends React.Component {
         </div>
         <div>
           <Row>
-            <Col span={16}>
+            <Col span={12}>
               <Row>
                 <Col span={3}>
                   姓名：
@@ -109,31 +109,24 @@ class ActorInfo extends React.Component {
                 </Col>
               </Row>
             </Col>
-            <Col span={6}>
-              <img className={styles.actorMainPic} src={this.props.location.query.imgUrl} alt="" />
+            <Col span={12}>
+              <video height="300px" controls="controls" autoPlay="autoplay" src={this.state.videoUrl}></video>
             </Col>
           </Row>
         </div>
         <Divider />
         <div style={{width: '100%'}}>
-          <Row>
-            <Col span={12}>
-              <div className={styles.title}>其他图片</div>
+
+              <div className={styles.pic}>
+                <img src={this.props.location.query.imgUrl} alt="" />
+              </div>
               {
-                this.state.imgList.length?this.state.imgList.map((item, index) => (
-                  <div key={index} className={styles.actorExtraPic}>
+                this.state.imgList.map((item, index) => (
+                  <div key={index} className={styles.pic}>
                     <img className={styles.actorMainPic} src={item} alt="" />
                   </div>
-                )):<div className={styles.noData}>暂无数据</div>
+                ))
               }
-            </Col>
-            <Col span={12}>
-              <div className={styles.title}>视频</div>
-              <div className={styles.video}>
-                <video width="600px" height="800px" controls="controls" autoPlay="autoplay" src={this.state.videoUrl}></video>
-              </div>
-            </Col>
-          </Row>
         </div>
       </div>
     )

@@ -2,6 +2,7 @@ import React from 'react'
 import { Row, Col, Tag, Divider, Button, Pagination } from 'antd'
 import styles from './css/tools.module.css'
 import { fetch } from '../../../fetch/fetch'
+import { Link } from 'react-router-dom'
 
 const { CheckableTag } = Tag
 
@@ -31,7 +32,7 @@ class Scenes extends React.Component {
   jump (id) {
     fetch({
       method: 'post',
-      url: '/api/retrieve/prop/queryDetail',
+      url: 'http://localhost:8080/retrieve/prop/queryDetail',
       data: JSON.stringify({
         id
       }),
@@ -55,7 +56,7 @@ class Scenes extends React.Component {
       pageNum: num
     })
     fetch({
-      url: '/api/retrieve/prop/searchProp',
+      url: 'http://localhost:8080/retrieve/prop/searchProp',
       method: 'post',
       data: JSON.stringify({
         labelList: this.state.labelTags.length?this.state.labelTags:null,
@@ -76,13 +77,14 @@ class Scenes extends React.Component {
   componentDidMount () {
     fetch({
       method: 'post',
-      url: '/api/retrieve/prop/initData'
+      url: 'http://localhost:8080/retrieve/prop/initData'
     }).then(res => {
       // console.log(res)
       this.setState({
         labelList: res.data.data.label,
       })
     })
+    this.getToolsList(1)
   }
 
   render() {
@@ -111,7 +113,9 @@ class Scenes extends React.Component {
         <div className="actorList">
           {this.state.toolsList.map(item => (
             <div key={item.id} className={styles.toolsPic}>
-              <img onClick={this.jump.bind(this, item.id)} className={styles.pic} src={item.imgPath} alt="" />
+              <Link className={styles.scenesPicContainer} to={{pathname: `tools/${item.id}`, query: {imgUrl: item.imgPath}}}>
+                <img className={styles.pic} src={item.imgPath} alt="" />
+              </Link>
               <div className={styles.name}>
                 {item.supplierName}
               </div>

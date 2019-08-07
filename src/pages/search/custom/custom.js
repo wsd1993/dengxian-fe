@@ -1,12 +1,12 @@
 import React from 'react'
 import { Row, Col, Tag, Divider, Button, Pagination } from 'antd'
-import styles from './css/scenes.module.css'
+import styles from './css/custom.module.css'
 import { Link } from 'react-router-dom'
 import { fetch } from '../../../fetch/fetch'
 
 const { CheckableTag } = Tag
 
-class Scenes extends React.Component {
+class Custom extends React.Component {
   constructor (props) {
     super(props)
     this.handlePropSelect = this.handlePropSelect.bind(this)
@@ -16,15 +16,18 @@ class Scenes extends React.Component {
     this.handlePageChange = this.handlePageChange.bind(this)
   }
   state = {
-    propTags: [],
-    timeTags: [],
+    nameTags: [],
+    sexTags: [],
+    ageTags: [],
     typeTags: [],
-    characTags: [],
-    propsList: [],
-    propsTags: [],
-    timeList: [],
+    labelTags: [],
+    channelTags: [],
+    nameList: [],
+    sexList: [],
+    ageList: [],
     typeList: [],
-    characList: [],
+    labelList: [],
+    channelList: [],
     // 搜索结果
     scenesList: [],
     pageNum: 1,
@@ -32,30 +35,44 @@ class Scenes extends React.Component {
     total: 0
   }
   async handlePropSelect (tag, checked) {
-    const { propTags } = this.state
-    const nextSelectedTags = checked ? [...propTags, tag] : propTags.filter(t => t !== tag)
-    await this.setState({ propTags: nextSelectedTags })
+    const { nameTags } = this.state
+    const nextSelectedTags = checked ? [...nameTags, tag] : nameTags.filter(t => t !== tag)
+    await this.setState({ nameTags: nextSelectedTags })
     this.getSecnesList(1)
   }
   
   async handleTimeSelect (tag, checked) {
-    const { timeTags } = this.state
-    const nextSelectedTags = checked ? [...timeTags, tag] : timeTags.filter(t => t !== tag)
-    await this.setState({ timeTags: nextSelectedTags })
+    const { sexTags } = this.state
+    const nextSelectedTags = checked ? [...sexTags, tag] : sexTags.filter(t => t !== tag)
+    await this.setState({ sexTags: nextSelectedTags })
     this.getSecnesList(1)
   }
 
   async handleTypeSelect (tag, checked) {
+    const { ageTags } = this.state
+    const nextSelectedTags = checked ? [...ageTags, tag] : ageTags.filter(t => t !== tag)
+    await this.setState({ ageTags: nextSelectedTags })
+    this.getSecnesList(1)
+  }
+
+  async handleCharacSelect (tag, checked) {
     const { typeTags } = this.state
     const nextSelectedTags = checked ? [...typeTags, tag] : typeTags.filter(t => t !== tag)
     await this.setState({ typeTags: nextSelectedTags })
     this.getSecnesList(1)
   }
 
-  async handleCharacSelect (tag, checked) {
-    const { characTags } = this.state
-    const nextSelectedTags = checked ? [...characTags, tag] : characTags.filter(t => t !== tag)
-    await this.setState({ characTags: nextSelectedTags })
+  async handleLabelSelect (tag, checked) {
+    const { labelTags } = this.state
+    const nextSelectedTags = checked ? [...labelTags, tag] : labelTags.filter(t => t !== tag)
+    await this.setState({ labelTags: nextSelectedTags })
+    this.getSecnesList(1)
+  }
+
+  async handleChannelSelect (tag, checked) {
+    const { channelTags } = this.state
+    const nextSelectedTags = checked ? [...channelTags, tag] : channelTags.filter(t => t !== tag)
+    await this.setState({ channelTags: nextSelectedTags })
     this.getSecnesList(1)
   }
 
@@ -70,15 +87,27 @@ class Scenes extends React.Component {
     await this.setState({
       pageNum: num
     })
-    // console.log(this.state.propTags)
+    let sex = ''
+    if (this.state.sexTags.length === 2 || this.state.sexTags.length === 0) {
+      sex = 2
+    } else {
+      if (this.state.sexTags[0] === '男') {
+        sex = 1
+      }
+      if (this.state.sexTags[0] === '女') {
+        sex = 0
+      }
+    }
     fetch({
-      url: 'http://localhost:8080/retrieve/area/searchArea',
+      url: 'http://localhost:8080/retrieve/custom/searchCustom',
       method: 'post',
       data: JSON.stringify({
-        natureList: this.state.propTags.length?this.state.propTags:null,
-        yearsList: this.state.timeTags.length?this.state.timeTags:null,
+        nameList: this.state.nameTags.length?this.state.nameTags:null,
+        sex: sex,
+        ageList: this.state.ageTags.length?this.state.ageTags:null,
         typeList: this.state.typeTags.length?this.state.typeTags:null,
-        featureList: this.state.characTags.length?this.state.characTags:null,
+        labelList: this.state.labelTags.length?this.state.labelTags:null,
+        channelList: this.state.channelList.length?this.state.channelList:null,
         pageNum: num,
         pageSize: this.state.pageSize
       }),
@@ -96,13 +125,15 @@ class Scenes extends React.Component {
   componentDidMount () {
     fetch({
       method: 'post',
-      url: 'http://localhost:8080/retrieve/area/initData'
+      url: 'http://localhost:8080/retrieve/custom/initData'
     }).then(res => {
       this.setState({
-        propsList: res.data.data.nature,
-        timeList: res.data.data.years,
-        characList: res.data.data.feature,
-        typeList: res.data.data.type
+        nameList: res.data.data.name,
+        sexList: res.data.data.sex,
+        ageList: res.data.data.age,
+        typeList: res.data.data.type,
+        labelList: res.data.data.label,
+        channelList: res.data.data.channel
       })
     })
     this.getSecnesList(1)
@@ -114,13 +145,13 @@ class Scenes extends React.Component {
         <div className={styles.category}>
           <Row className={styles.row}>
             <Col span={1}>
-              性质：
+              名称：
             </Col>
             <Col span={20}>
-              {this.state.propsList.map(tag => (
+              {this.state.nameList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.propTags.indexOf(tag) > -1}
+                  checked={this.state.nameTags.indexOf(tag) > -1}
                   onChange={checked => this.handlePropSelect(tag, checked)}
                 >
                   {tag}
@@ -130,13 +161,13 @@ class Scenes extends React.Component {
           </Row>
           <Row className={styles.row}>
             <Col span={1}>
-              年代：
+              性别：
             </Col>
             <Col span={20}>
-              {this.state.timeList.map(tag => (
+              {this.state.sexList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.timeTags.indexOf(tag) > -1}
+                  checked={this.state.sexTags.indexOf(tag) > -1}
                   onChange={checked => this.handleTimeSelect(tag, checked)}
                 >
                   {tag}
@@ -146,13 +177,13 @@ class Scenes extends React.Component {
           </Row>
           <Row className={styles.row}>
             <Col span={1}>
-              类型：
+              年龄：
             </Col>
             <Col span={20}>
-              {this.state.typeList.map(tag => (
+              {this.state.ageList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.typeTags.indexOf(tag) > -1}
+                  checked={this.state.ageTags.indexOf(tag) > -1}
                   onChange={checked => this.handleTypeSelect(tag, checked)}
                 >
                   {tag}
@@ -162,14 +193,46 @@ class Scenes extends React.Component {
           </Row>
           <Row className={styles.row}>
             <Col span={1}>
-              特点：
+              类别：
             </Col>
             <Col span={20}>
-              {this.state.characList.map(tag => (
+              {this.state.typeList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.characTags.indexOf(tag) > -1}
+                  checked={this.state.typeTags.indexOf(tag) > -1}
                   onChange={checked => this.handleCharacSelect(tag, checked)}
+                >
+                  {tag}
+                </CheckableTag>
+              ))}
+            </Col>
+          </Row>
+          <Row className={styles.row}>
+            <Col span={1}>
+              类目：
+            </Col>
+            <Col span={20}>
+              {this.state.labelList.map(tag => (
+                <CheckableTag
+                  key={tag}
+                  checked={this.state.labelTags.indexOf(tag) > -1}
+                  onChange={checked => this.handleLabelSelect(tag, checked)}
+                >
+                  {tag}
+                </CheckableTag>
+              ))}
+            </Col>
+          </Row>
+          <Row className={styles.row}>
+            <Col span={1}>
+              渠道：
+            </Col>
+            <Col span={20}>
+              {this.state.channelList.map(tag => (
+                <CheckableTag
+                  key={tag}
+                  checked={this.state.channelTags.indexOf(tag) > -1}
+                  onChange={checked => this.handleChannelSelect(tag, checked)}
                 >
                   {tag}
                 </CheckableTag>
@@ -181,11 +244,11 @@ class Scenes extends React.Component {
         <Divider />
         <div className="actorList">
           {this.state.scenesList.map(item => (
-            <div key={item.id} className={styles.scenesPic}>
-              <Link className={styles.scenesPicContainer} to={{pathname: `scenes/${item.id}`, query: {imgUrl: item.imgPath}}}>
+            <div key={item.customId} className={styles.scenesPic}>
+              <Link className={styles.scenesPicContainer} to={{pathname: `custom/${item.customId}`, query: {imgUrl: item.imgPath}}}>
                 <img className={styles.pic} src={item.imgPath} alt="" />
               </Link>
-              <div style={{textAlign: 'center'}}>名称：{item.name}  ({item.nature})</div>
+              <div style={{textAlign: 'center'}}>{item.name}</div>
             </div>
           ))}
         </div>
@@ -204,4 +267,4 @@ class Scenes extends React.Component {
   }
 }
 
-export default Scenes
+export default Custom
