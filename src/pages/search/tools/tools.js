@@ -3,6 +3,8 @@ import { Row, Col, Tag, Divider, Button, Pagination } from 'antd'
 import styles from './css/tools.module.css'
 import { fetch } from '../../../fetch/fetch'
 import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
+import * as ActionCreator from './store/actionCreator'
 
 const { CheckableTag } = Tag
 
@@ -13,21 +15,19 @@ class Scenes extends React.Component {
     this.handlePageChange = this.handlePageChange.bind(this)
   }
   state = {
-
     labelList: [],
     labelTags: [],
     // 搜索结果
-    lableList: [],
     pageNum: 1,
     pageSize: 20,
     total: 0,
     toolsList: []
   }
   async handleLabelSelect (tag, checked) {
-    const { labelTags } = this.state
-    const nextSelectedTags = checked ? [...labelTags, tag] : labelTags.filter(t => t !== tag)
-    await this.setState({ labelTags: nextSelectedTags })
-    this.getToolsList(1)
+    const nextSelectedTags = checked ? [...this.props.labelTags, tag] : this.props.labelTags.filter(t => t !== tag)
+    await this.props.setLabelTags(nextSelectedTags)
+    await this.props.setPageNum(1)
+    this.getToolsList()
   }
   jump (id) {
     fetch({
@@ -45,32 +45,25 @@ class Scenes extends React.Component {
   }
   
   async handlePageChange (val) {
-    await this.setState({
-      pageNum: val,
-    })
-    this.getToolsList(val)
+    await this.props.setPageNum(val)
+    this.getToolsList()
   }
 
-  async getToolsList (num) {
-    await this.setState({
-      pageNum: num
-    })
+  async getToolsList () {
     fetch({
       url: 'http://localhost:8080/retrieve/prop/searchProp',
       method: 'post',
       data: JSON.stringify({
-        labelList: this.state.labelTags.length?this.state.labelTags:null,
-        pageNum: num,
-        pageSize: this.state.pageSize,
+        labelList: this.props.labelTags.length?this.props.labelTags:null,
+        pageNum: this.props.pageNum,
+        pageSize: this.props.pageSize,
       }),
       headers: {
         'Content-Type': 'application/json'
       }
     }).then(res => {
-      this.setState({
-        toolsList: res.data.data.list,
-        total: res.data.data.page.totalResult
-      })
+      this.props.setToolsList(res.data.data.list)
+      this.props.setTotal(res.data.data.page.totalResult)
     })
   }
 
@@ -79,12 +72,9 @@ class Scenes extends React.Component {
       method: 'post',
       url: 'http://localhost:8080/retrieve/prop/initData'
     }).then(res => {
-      // console.log(res)
-      this.setState({
-        labelList: res.data.data.label,
-      })
+      this.props.setLabelList(res.data.data.label)
     })
-    this.getToolsList(1)
+    this.getToolsList()
   }
 
   render() {
@@ -96,10 +86,10 @@ class Scenes extends React.Component {
               标签：
             </Col>
             <Col span={20}>
-              {this.state.labelList.map(tag => (
+              {this.props.labelList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.labelTags.indexOf(tag) > -1}
+                  checked={this.props.labelTags.indexOf(tag) > -1}
                   onChange={checked => this.handleLabelSelect(tag, checked)}
                 >
                   {tag}
@@ -111,7 +101,7 @@ class Scenes extends React.Component {
         </div>
         <Divider />
         <div className="actorList">
-          {this.state.toolsList.map(item => (
+          {this.props.toolsList.map(item => (
             <div key={item.id} className={styles.toolsPic}>
               <Link className={styles.scenesPicContainer} to={{pathname: `tools/${item.id}`, query: {imgUrl: item.imgPath}}}>
                 <img className={styles.pic} src={item.imgPath} alt="" />
@@ -125,11 +115,11 @@ class Scenes extends React.Component {
         <div className={styles.block}>
         <Pagination
             showQuickJumper
-            current={this.state.pageNum}
-            pageSize={this.state.pageSize}
+            current={this.props.pageNum}
+            pageSize={this.props.pageSize}
             showTotal={total => `共 ${total} 条结果`}
             defaultCurrent={1}
-            total={this.state.total}
+            total={this.props.total}
             onChange={this.handlePageChange} />
         </div>
       </div>
@@ -137,4 +127,48 @@ class Scenes extends React.Component {
   }
 }
 
-export default Scenes
+const mapStateToProps = (state) => {
+  const {
+    labelList,
+    labelTags,
+    // 搜索结果
+    pageNum,
+    pageSize,
+    total,
+    toolsList
+  } = state.toolsReducer
+  return {
+    labelList,
+    labelTags,
+    // 搜索结果
+    pageNum,
+    pageSize,
+    total,
+    toolsList
+  }
+}
+
+const mapDistpatchToProps = (dispatch) => {
+  return {
+    setLabelList (data) {
+      dispatch(ActionCreator.setLabelList(data))
+    },
+    setLabelTags (data) {
+      dispatch(ActionCreator.setLabelTags(data))
+    },
+    setPageNum (data) {
+      dispatch(ActionCreator.setPageNum(data))
+    },
+    setPageSize (data) {
+      dispatch(ActionCreator.setPageSize(data))
+    },
+    setTotal (data) {
+      dispatch(ActionCreator.setTotal(data))
+    },
+    setToolsList (data) {
+      dispatch(ActionCreator.setToolsList(data))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDistpatchToProps)(Scenes)

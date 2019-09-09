@@ -120,12 +120,15 @@ class CustomInfo extends React.Component {
         </div>
         <Divider />
         <div style={{width: '100%'}}>
+          <div className={styles.customInfoPic}>
+            <img className={styles.pic} src={this.props.location.query.imgUrl} alt="" />
+          </div>
           {
-            this.state.imgList.length?this.state.imgList.map((item, index) => (
+            this.state.imgList.map((item, index) => (
               <div key={index} className={styles.customInfoPic}>
                 <img className={styles.pic} src={item} alt="" />
               </div>
-            )):<div className={styles.noData}>暂无数据</div>
+            ))
           }
         </div>
       </div>

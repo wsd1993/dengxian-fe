@@ -11,7 +11,8 @@
 .actorPic {
   width: 10%;
   display: inline-block;
-  margin: 4px;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .actorContainer {

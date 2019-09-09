@@ -3,6 +3,8 @@ import { Row, Col, Tag, Divider, Button, Pagination } from 'antd'
 import styles from './css/actor.module.css'
 import { Link } from 'react-router-dom'
 import { fetch } from '../../../fetch/fetch'
+import { connect } from 'react-redux'
+import * as ActionCreator from './store/actionCreator'
 
 const { CheckableTag } = Tag
 
@@ -56,57 +58,49 @@ class Actors extends React.Component {
       url: 'http://localhost:8080/retrieve/actor/initData',
       method: 'post',
     }).then(res => {
-      this.setState({
-        hobbyList: res.data.data.hobby,
-        countryList: res.data.data.country
-      })
+      this.props.setHobbyList(res.data.data.hobby)
+      this.props.setCountryList(res.data.data.country)
     })
     this.getActorList(1)
   }
 
   async handleSexSelect (tag, checked) {
-    const { sexTags } = this.state
-    const nextSelectedTags = checked ? [...sexTags, tag] : sexTags.filter(t => t !== tag)
-    await this.setState({ sexTags: nextSelectedTags })
+    // const { sexTags } = this.state
+    const nextSelectedTags = checked ? [...this.props.sexTags, tag] : this.props.sexTags.filter(t => t !== tag)
+    // await this.setState({ sexTags: nextSelectedTags })
+    await this.props.setSexTags(nextSelectedTags)
     this.getActorList(1)
   }
   async handlePageChange (val) {
-    await this.setState({
-      pageNum: val
-    })
-    this.getActorList(val)
+    await this.props.setPageNum(val)
+    this.getActorList()
   }
   async handleAgeSelect (tag, checked) {
-    const { ageTags } = this.state
-    const nextSelectedTags = checked ? [...ageTags, tag] : ageTags.filter(t => t !== tag)
-    await this.setState({ ageTags: nextSelectedTags })
-    this.getActorList(1)
+    const nextSelectedTags = checked ? [...this.props.ageTags, tag] : this.props.ageTags.filter(t => t !== tag)
+    await this.props.setAgeTags(nextSelectedTags)
+    this.getActorList()
   }
 
   async handleNationalSelect (tag, checked) {
-    const { nationalTags } = this.state
-    const nextSelectedTags = checked ? [...nationalTags, tag] : nationalTags.filter(t => t !== tag)
-    await this.setState({ nationalTags: nextSelectedTags })
+    const nextSelectedTags = checked ? [...this.props.nationalTags, tag] : this.props.nationalTags.filter(t => t !== tag)
+    // await this.setState({ nationalTags: nextSelectedTags })
+    await this.props.setNationalTags(nextSelectedTags)
     this.getActorList(1)
   }
 
   async handleHobbySelect (tag, checked) {
-    const { hobbyTags } = this.state
-    const nextSelectedTags = checked ? [...hobbyTags, tag] : hobbyTags.filter(t => t !== tag)
-    await this.setState({ hobbyTags: nextSelectedTags })
-    this.getActorList(1)
+    const nextSelectedTags = checked ? [...this.props.hobbyTags, tag] : this.props.hobbyTags.filter(t => t !== tag)
+    await this.props.setHobbyTags(nextSelectedTags)
+    this.getActorList()
   }
 
-  async getActorList (num) {
-    await this.setState({
-      pageNum: num
-    })
-    const newAgeList = serilizeAgeList(this.state.ageTags)
+  async getActorList () {
+    const newAgeList = serilizeAgeList(this.props.ageTags)
     let sex
-    if (this.state.sexTags.length === 2) {
+    if (this.props.sexTags.length === 2) {
       sex = 2
-    } else if (this.state.sexTags.length === 1) {
-      if (this.state.sexTags[0] === '男') {
+    } else if (this.props.sexTags.length === 1) {
+      if (this.props.sexTags[0] === '男') {
         sex = 1
       } else {
         sex = 0
@@ -120,20 +114,23 @@ class Actors extends React.Component {
       data: JSON.stringify({
         sex,
         ageList: newAgeList.length===0?null:newAgeList,
-        countryList: this.state.nationalTags.length===0?null:this.state.nationalTags,
-        hobbyList: this.state.hobbyTags.length===0?null:this.state.hobbyTags,
-        pageNum: num,
-        pageSize: this.state.pageSize
+        countryList: this.props.nationalTags.length===0?null:this.props.nationalTags,
+        hobbyList: this.props.hobbyTags.length===0?null:this.props.hobbyTags,
+        pageNum: this.props.pageNum,
+        pageSize: this.props.pageSize
       }),
       headers: {
         'Content-Type': 'application/json'
       }
     }).then(res => {
-      this.setState({
-        actorList: res.data.data.list,
-        total: res.data.data.page.totalResult,
-        pageNum: this.state.pageNum
-      })
+      // this.setState({
+      //   actorList: res.data.data.list,
+      //   total: res.data.data.page.totalResult,
+      //   pageNum: this.state.pageNum
+      // })
+      this.props.setActorList(res.data.data.list)
+      this.props.setTotal(res.data.data.page.totalResult)
+      this.props.setPageNum(this.props.pageNum)
     })
   }
 
@@ -149,7 +146,7 @@ class Actors extends React.Component {
               {sexList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.sexTags.indexOf(tag) > -1}
+                  checked={this.props.sexTags.indexOf(tag) > -1}
                   onChange={checked => this.handleSexSelect(tag, checked)}
                 >
                   {tag}
@@ -165,7 +162,7 @@ class Actors extends React.Component {
               {ageRangeFromServer.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.ageTags.indexOf(tag) > -1}
+                  checked={this.props.ageTags.indexOf(tag) > -1}
                   onChange={checked => this.handleAgeSelect(tag, checked)}
                 >
                   {tag}
@@ -178,10 +175,10 @@ class Actors extends React.Component {
               国籍：
             </Col>
             <Col span={20}>
-              {this.state.countryList.map(tag => (
+              {this.props.countryList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.nationalTags.indexOf(tag) > -1}
+                  checked={this.props.nationalTags.indexOf(tag) > -1}
                   onChange={checked => this.handleNationalSelect(tag, checked)}
                 >
                   {tag}
@@ -194,10 +191,10 @@ class Actors extends React.Component {
               特长：
             </Col>
             <Col span={20}>
-              {this.state.hobbyList.map(tag => (
+              {this.props.hobbyList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.hobbyTags.indexOf(tag) > -1}
+                  checked={this.props.hobbyTags.indexOf(tag) > -1}
                   onChange={checked => this.handleHobbySelect(tag, checked)}
                 >
                   {tag}
@@ -211,8 +208,8 @@ class Actors extends React.Component {
         <div className="actorList">
           {
             // console.log(this.state)
-            this.state.actorList.length?
-            this.state.actorList.map(item => (
+            this.props.actorList.length?
+            this.props.actorList.map(item => (
               <div key={item.id} className={styles.actorPic}>
                 <Link className={styles.actorContainer} to={{pathname: `/actors/${item.id}`, query: {imgUrl: item.imgPath}}}>
                   <img className={styles.pic} src={item.imgPath} alt="" />
@@ -227,11 +224,11 @@ class Actors extends React.Component {
         <div className={styles.block}>
           <Pagination
             showQuickJumper
-            current={this.state.pageNum}
-            pageSize={this.state.pageSize}
+            current={this.props.pageNum}
+            pageSize={this.props.pageSize}
             showTotal={total => `共 ${total} 条结果`}
             defaultCurrent={1}
-            total={this.state.total}
+            total={this.props.total}
             onChange={this.handlePageChange} />
         </div>
       </div>
@@ -239,4 +236,66 @@ class Actors extends React.Component {
   }
 }
 
-export default Actors
+const mapStateToProps = (state) => {
+  const {
+    sexTags,
+    ageTags,
+    nationalTags,
+    hobbyTags,
+    hobbyList,
+    countryList,
+    actorList,
+    pageNum,
+    pageSize,
+    total
+  } = state.actorReducer
+  return {
+    sexTags,
+    ageTags,
+    nationalTags,
+    hobbyTags,
+    hobbyList,
+    countryList,
+    actorList,
+    pageNum,
+    pageSize,
+    total
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setSexTags (data) {
+      dispatch(ActionCreator.setActorSexTags(data))
+    },
+    setAgeTags (data) {
+      dispatch(ActionCreator.setActorAgeTags(data))
+    },
+    setNationalTags (data) {
+      dispatch(ActionCreator.setNationalTags(data))
+    },
+    setHobbyTags (data) {
+      dispatch(ActionCreator.setHobbyTags(data))
+    },
+    setHobbyList (data) {
+      dispatch(ActionCreator.setHobbyList(data))
+    },
+    setCountryList (data) {
+      dispatch(ActionCreator.setCountryList(data))
+    },
+    setActorList (data) {
+      dispatch(ActionCreator.setActorList(data))
+    },
+    setPageNum (data) {
+      dispatch(ActionCreator.setPageNum(data))
+    },
+    setPageSize (data) {
+      dispatch(ActionCreator.setPageSize(data))
+    },
+    setTotal (data) {
+      dispatch(ActionCreator.setTotal(data))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Actors)

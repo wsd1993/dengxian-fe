@@ -3,6 +3,8 @@ import { Row, Col, Tag, Divider, Button, Pagination } from 'antd'
 import styles from './css/custom.module.css'
 import { Link } from 'react-router-dom'
 import { fetch } from '../../../fetch/fetch'
+import { connect } from 'react-redux'
+import * as ActionCreator from './store/actionCreator'
 
 const { CheckableTag } = Tag
 
@@ -35,66 +37,61 @@ class Custom extends React.Component {
     total: 0
   }
   async handlePropSelect (tag, checked) {
-    const { nameTags } = this.state
-    const nextSelectedTags = checked ? [...nameTags, tag] : nameTags.filter(t => t !== tag)
-    await this.setState({ nameTags: nextSelectedTags })
-    this.getSecnesList(1)
+    const nextSelectedTags = checked ? [...this.props.nameTags, tag] : this.props.nameTags.filter(t => t !== tag)
+    await this.props.setNameTags(nextSelectedTags)
+    await this.props.setPageNum(1)
+    this.getSecnesList()
   }
   
   async handleTimeSelect (tag, checked) {
-    const { sexTags } = this.state
-    const nextSelectedTags = checked ? [...sexTags, tag] : sexTags.filter(t => t !== tag)
-    await this.setState({ sexTags: nextSelectedTags })
-    this.getSecnesList(1)
+    const nextSelectedTags = checked ? [...this.props.sexTags, tag] : this.props.sexTags.filter(t => t !== tag)
+    await this.props.setSexTags(nextSelectedTags)
+    await this.props.setPageNum(1)
+    this.getSecnesList()
   }
 
   async handleTypeSelect (tag, checked) {
-    const { ageTags } = this.state
-    const nextSelectedTags = checked ? [...ageTags, tag] : ageTags.filter(t => t !== tag)
-    await this.setState({ ageTags: nextSelectedTags })
-    this.getSecnesList(1)
+    const nextSelectedTags = checked ? [...this.props.ageTags, tag] : this.props.ageTags.filter(t => t !== tag)
+    await this.props.setAgeTags(nextSelectedTags)
+    await this.props.setPageNum(1)
+    this.getSecnesList()
   }
 
   async handleCharacSelect (tag, checked) {
-    const { typeTags } = this.state
-    const nextSelectedTags = checked ? [...typeTags, tag] : typeTags.filter(t => t !== tag)
-    await this.setState({ typeTags: nextSelectedTags })
-    this.getSecnesList(1)
+    const nextSelectedTags = checked ? [...this.props.typeTags, tag] : this.props.typeTags.filter(t => t !== tag)
+    await this.props.setTypeTags(nextSelectedTags)
+    await this.props.setPageNum(1)
+    this.getSecnesList()
   }
 
   async handleLabelSelect (tag, checked) {
-    const { labelTags } = this.state
-    const nextSelectedTags = checked ? [...labelTags, tag] : labelTags.filter(t => t !== tag)
-    await this.setState({ labelTags: nextSelectedTags })
-    this.getSecnesList(1)
+    const nextSelectedTags = checked ? [...this.props.labelTags, tag] : this.props.labelTags.filter(t => t !== tag)
+    await this.props.setLabelTags(nextSelectedTags)
+    await this.props.setPageNum(1)
+    this.getSecnesList()
   }
 
   async handleChannelSelect (tag, checked) {
-    const { channelTags } = this.state
-    const nextSelectedTags = checked ? [...channelTags, tag] : channelTags.filter(t => t !== tag)
-    await this.setState({ channelTags: nextSelectedTags })
+    const nextSelectedTags = checked ? [...this.props.channelTags, tag] : this.props.channelTags.filter(t => t !== tag)
+    await this.props.setChannelTags(nextSelectedTags)
+    await this.props.setPageNum(1)
     this.getSecnesList(1)
   }
 
   async handlePageChange (val) {
-    await this.setState({
-      pageNum: val,
-    })
-    this.getSecnesList(val)
+    await this.props.setPageNum(val)
+    this.getSecnesList()
   }
 
-  async getSecnesList (num) {
-    await this.setState({
-      pageNum: num
-    })
+  async getSecnesList () {
     let sex = ''
-    if (this.state.sexTags.length === 2 || this.state.sexTags.length === 0) {
+    if (this.props.sexTags.length === 2 || this.props.sexTags.length === 0) {
       sex = 2
     } else {
-      if (this.state.sexTags[0] === '男') {
+      if (this.props.sexTags[0] === '男') {
         sex = 1
       }
-      if (this.state.sexTags[0] === '女') {
+      if (this.props.sexTags[0] === '女') {
         sex = 0
       }
     }
@@ -102,23 +99,21 @@ class Custom extends React.Component {
       url: 'http://localhost:8080/retrieve/custom/searchCustom',
       method: 'post',
       data: JSON.stringify({
-        nameList: this.state.nameTags.length?this.state.nameTags:null,
+        nameList: this.props.nameTags.length?this.props.nameTags:null,
         sex: sex,
-        ageList: this.state.ageTags.length?this.state.ageTags:null,
-        typeList: this.state.typeTags.length?this.state.typeTags:null,
-        labelList: this.state.labelTags.length?this.state.labelTags:null,
-        channelList: this.state.channelList.length?this.state.channelList:null,
-        pageNum: num,
-        pageSize: this.state.pageSize
+        ageList: this.props.ageTags.length?this.props.ageTags:null,
+        typeList: this.props.typeTags.length?this.props.typeTags:null,
+        labelList: this.props.labelTags.length?this.props.labelTags:null,
+        channelList: this.props.channelList.length?this.props.channelList:null,
+        pageNum: this.props.pageNum,
+        pageSize: this.props.pageSize
       }),
       headers: {
         'Content-Type': 'application/json'
       }
     }).then(res => {
-      this.setState({
-        scenesList: res.data.data.list,
-        total: res.data.data.page.totalResult
-      })
+      this.props.setScenesList(res.data.data.list)
+      this.props.setTotal(res.data.data.page.totalResult)
     })
   }
 
@@ -127,16 +122,14 @@ class Custom extends React.Component {
       method: 'post',
       url: 'http://localhost:8080/retrieve/custom/initData'
     }).then(res => {
-      this.setState({
-        nameList: res.data.data.name,
-        sexList: res.data.data.sex,
-        ageList: res.data.data.age,
-        typeList: res.data.data.type,
-        labelList: res.data.data.label,
-        channelList: res.data.data.channel
-      })
+      this.props.setNameList(res.data.data.name)
+      this.props.setSexList(res.data.data.sex)
+      this.props.setAgeList(res.data.data.age)
+      this.props.setTypeList(res.data.data.type)
+      this.props.setLabelList(res.data.data.label)
+      this.props.setChannelList(res.data.data.channel)
     })
-    this.getSecnesList(1)
+    this.getSecnesList()
   }
 
   render() {
@@ -145,29 +138,13 @@ class Custom extends React.Component {
         <div className={styles.category}>
           <Row className={styles.row}>
             <Col span={1}>
-              名称：
-            </Col>
-            <Col span={20}>
-              {this.state.nameList.map(tag => (
-                <CheckableTag
-                  key={tag}
-                  checked={this.state.nameTags.indexOf(tag) > -1}
-                  onChange={checked => this.handlePropSelect(tag, checked)}
-                >
-                  {tag}
-                </CheckableTag>
-              ))}
-            </Col>
-          </Row>
-          <Row className={styles.row}>
-            <Col span={1}>
               性别：
             </Col>
             <Col span={20}>
-              {this.state.sexList.map(tag => (
+              {this.props.sexList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.sexTags.indexOf(tag) > -1}
+                  checked={this.props.sexTags.indexOf(tag) > -1}
                   onChange={checked => this.handleTimeSelect(tag, checked)}
                 >
                   {tag}
@@ -180,10 +157,10 @@ class Custom extends React.Component {
               年龄：
             </Col>
             <Col span={20}>
-              {this.state.ageList.map(tag => (
+              {this.props.ageList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.ageTags.indexOf(tag) > -1}
+                  checked={this.props.ageTags.indexOf(tag) > -1}
                   onChange={checked => this.handleTypeSelect(tag, checked)}
                 >
                   {tag}
@@ -196,10 +173,10 @@ class Custom extends React.Component {
               类别：
             </Col>
             <Col span={20}>
-              {this.state.typeList.map(tag => (
+              {this.props.typeList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.typeTags.indexOf(tag) > -1}
+                  checked={this.props.typeTags.indexOf(tag) > -1}
                   onChange={checked => this.handleCharacSelect(tag, checked)}
                 >
                   {tag}
@@ -212,10 +189,10 @@ class Custom extends React.Component {
               类目：
             </Col>
             <Col span={20}>
-              {this.state.labelList.map(tag => (
+              {this.props.labelList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.labelTags.indexOf(tag) > -1}
+                  checked={this.props.labelTags.indexOf(tag) > -1}
                   onChange={checked => this.handleLabelSelect(tag, checked)}
                 >
                   {tag}
@@ -228,10 +205,10 @@ class Custom extends React.Component {
               渠道：
             </Col>
             <Col span={20}>
-              {this.state.channelList.map(tag => (
+              {this.props.channelList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.channelTags.indexOf(tag) > -1}
+                  checked={this.props.channelTags.indexOf(tag) > -1}
                   onChange={checked => this.handleChannelSelect(tag, checked)}
                 >
                   {tag}
@@ -243,7 +220,7 @@ class Custom extends React.Component {
         </div>
         <Divider />
         <div className="actorList">
-          {this.state.scenesList.map(item => (
+          {this.props.scenesList.map(item => (
             <div key={item.customId} className={styles.scenesPic}>
               <Link className={styles.scenesPicContainer} to={{pathname: `custom/${item.customId}`, query: {imgUrl: item.imgPath}}}>
                 <img className={styles.pic} src={item.imgPath} alt="" />
@@ -255,11 +232,11 @@ class Custom extends React.Component {
         <div className={styles.block}>
         <Pagination
             showQuickJumper
-            current={this.state.pageNum}
-            pageSize={this.state.pageSize}
+            current={this.props.pageNum}
+            pageSize={this.props.pageSize}
             showTotal={total => `共 ${total} 条结果`}
             defaultCurrent={1}
-            total={this.state.total}
+            total={this.props.total}
             onChange={this.handlePageChange} />
         </div>
       </div>
@@ -267,4 +244,97 @@ class Custom extends React.Component {
   }
 }
 
-export default Custom
+const mapStateToProps = (state) => {
+  const {
+    nameTags,
+    sexTags,
+    ageTags,
+    typeTags,
+    labelTags,
+    channelTags,
+    nameList,
+    sexList,
+    ageList,
+    typeList,
+    labelList,
+    channelList,
+    // 搜索结果
+    scenesList,
+    pageNum,
+    pageSize,
+    total
+  } = state.customReducer
+  return {
+    nameTags,
+    sexTags,
+    ageTags,
+    typeTags,
+    labelTags,
+    channelTags,
+    nameList,
+    sexList,
+    ageList,
+    typeList,
+    labelList,
+    channelList,
+    scenesList,
+    pageNum,
+    pageSize,
+    total
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setNameTags (data) {
+      dispatch(ActionCreator.setNameTags(data))
+    },
+    setSexTags (data) {
+      dispatch(ActionCreator.setSexTags(data))
+    },
+    setAgeTags (data) {
+      dispatch(ActionCreator.setAgeTags(data))
+    },
+    setTypeTags (data) {
+      dispatch(ActionCreator.setTypeTags(data))
+    },
+    setLabelTags (data) {
+      dispatch(ActionCreator.setLabelTags(data))
+    },
+    setChannelTags (data) {
+      dispatch(ActionCreator.setChannelTags(data))
+    },
+    setNameList (data) {
+      dispatch(ActionCreator.setNameList(data))
+    },
+    setSexList (data) {
+      dispatch(ActionCreator.setSexList(data))
+    },
+    setAgeList (data) {
+      dispatch(ActionCreator.setAgeList(data))
+    },
+    setTypeList (data) {
+      dispatch(ActionCreator.setTypeList(data))
+    },
+    setLabelList (data) {
+      dispatch(ActionCreator.setLabelList(data))
+    },
+    setChannelList (data) {
+      dispatch(ActionCreator.setChannelList(data))
+    },
+    setScenesList (data) {
+      dispatch(ActionCreator.setSceneList(data))
+    },
+    setPageNum (data) {
+      dispatch(ActionCreator.setPageNum(data))
+    },
+    setPageSize (data) {
+      dispatch(ActionCreator.setPageSize(data))
+    },
+    setTotal (data) {
+      dispatch(ActionCreator.setTotal(data))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Custom)

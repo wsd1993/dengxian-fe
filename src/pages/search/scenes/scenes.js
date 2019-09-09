@@ -3,6 +3,8 @@ import { Row, Col, Tag, Divider, Button, Pagination } from 'antd'
 import styles from './css/scenes.module.css'
 import { Link } from 'react-router-dom'
 import { fetch } from '../../../fetch/fetch'
+import { connect } from 'react-redux'
+import * as ActionCreator from './store/actionCreator'
 
 const { CheckableTag } = Tag
 
@@ -21,7 +23,6 @@ class Scenes extends React.Component {
     typeTags: [],
     characTags: [],
     propsList: [],
-    propsTags: [],
     timeList: [],
     typeList: [],
     characList: [],
@@ -32,64 +33,58 @@ class Scenes extends React.Component {
     total: 0
   }
   async handlePropSelect (tag, checked) {
-    const { propTags } = this.state
-    const nextSelectedTags = checked ? [...propTags, tag] : propTags.filter(t => t !== tag)
-    await this.setState({ propTags: nextSelectedTags })
-    this.getSecnesList(1)
+    const nextSelectedTags = checked ? [...this.props.propTags, tag] : this.props.propTags.filter(t => t !== tag)
+    await this.props.setPropTags(nextSelectedTags)
+    await this.props.setPageNum(1)
+    this.getSecnesList()
   }
   
   async handleTimeSelect (tag, checked) {
-    const { timeTags } = this.state
-    const nextSelectedTags = checked ? [...timeTags, tag] : timeTags.filter(t => t !== tag)
-    await this.setState({ timeTags: nextSelectedTags })
-    this.getSecnesList(1)
+    const nextSelectedTags = checked ? [...this.props.timeTags, tag] : this.props.timeTags.filter(t => t !== tag)
+    await this.props.setTimeTags(nextSelectedTags)
+    await this.props.setPageNum(1)
+    this.getSecnesList()
   }
 
   async handleTypeSelect (tag, checked) {
-    const { typeTags } = this.state
-    const nextSelectedTags = checked ? [...typeTags, tag] : typeTags.filter(t => t !== tag)
-    await this.setState({ typeTags: nextSelectedTags })
-    this.getSecnesList(1)
+    const nextSelectedTags = checked ? [...this.props.typeTags, tag] : this.props.typeTags.filter(t => t !== tag)
+    await this.props.setTypeTags(nextSelectedTags)
+    await this.props.setPageNum(1)
+    this.getSecnesList()
   }
 
   async handleCharacSelect (tag, checked) {
-    const { characTags } = this.state
-    const nextSelectedTags = checked ? [...characTags, tag] : characTags.filter(t => t !== tag)
-    await this.setState({ characTags: nextSelectedTags })
-    this.getSecnesList(1)
+    const nextSelectedTags = checked ? [...this.props.characTags, tag] : this.props.characTags.filter(t => t !== tag)
+    await this.props.setCharacTags(nextSelectedTags)
+    await this.props.setPageNum(1)
+    this.getSecnesList()
   }
 
   async handlePageChange (val) {
-    await this.setState({
-      pageNum: val,
-    })
-    this.getSecnesList(val)
+    await this.props.setPageNum(val)
+    await this.props.setPageNum(val)
+    this.getSecnesList()
   }
 
-  async getSecnesList (num) {
-    await this.setState({
-      pageNum: num
-    })
+  async getSecnesList () {
     // console.log(this.state.propTags)
     fetch({
       url: 'http://localhost:8080/retrieve/area/searchArea',
       method: 'post',
       data: JSON.stringify({
-        natureList: this.state.propTags.length?this.state.propTags:null,
-        yearsList: this.state.timeTags.length?this.state.timeTags:null,
-        typeList: this.state.typeTags.length?this.state.typeTags:null,
-        featureList: this.state.characTags.length?this.state.characTags:null,
-        pageNum: num,
-        pageSize: this.state.pageSize
+        natureList: this.props.propTags.length?this.props.propTags:null,
+        yearsList: this.props.timeTags.length?this.props.timeTags:null,
+        typeList: this.props.typeTags.length?this.props.typeTags:null,
+        featureList: this.props.characTags.length?this.props.characTags:null,
+        pageNum: this.props.pageNum,
+        pageSize: this.props.pageSize
       }),
       headers: {
         'Content-Type': 'application/json'
       }
     }).then(res => {
-      this.setState({
-        scenesList: res.data.data.list,
-        total: res.data.data.page.totalResult
-      })
+      this.props.setScenesList(res.data.data.list)
+      this.props.setTotal(res.data.data.page.totalResult)
     })
   }
 
@@ -98,14 +93,12 @@ class Scenes extends React.Component {
       method: 'post',
       url: 'http://localhost:8080/retrieve/area/initData'
     }).then(res => {
-      this.setState({
-        propsList: res.data.data.nature,
-        timeList: res.data.data.years,
-        characList: res.data.data.feature,
-        typeList: res.data.data.type
-      })
+      this.props.setPropsList(res.data.data.nature)
+      this.props.setTimeList(res.data.data.years)
+      this.props.setCharacList(res.data.data.feature)
+      this.props.setTypeList(res.data.data.type)
     })
-    this.getSecnesList(1)
+    this.getSecnesList()
   }
 
   render() {
@@ -117,10 +110,10 @@ class Scenes extends React.Component {
               性质：
             </Col>
             <Col span={20}>
-              {this.state.propsList.map(tag => (
+              {this.props.propsList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.propTags.indexOf(tag) > -1}
+                  checked={this.props.propTags.indexOf(tag) > -1}
                   onChange={checked => this.handlePropSelect(tag, checked)}
                 >
                   {tag}
@@ -133,10 +126,10 @@ class Scenes extends React.Component {
               年代：
             </Col>
             <Col span={20}>
-              {this.state.timeList.map(tag => (
+              {this.props.timeList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.timeTags.indexOf(tag) > -1}
+                  checked={this.props.timeTags.indexOf(tag) > -1}
                   onChange={checked => this.handleTimeSelect(tag, checked)}
                 >
                   {tag}
@@ -149,10 +142,10 @@ class Scenes extends React.Component {
               类型：
             </Col>
             <Col span={20}>
-              {this.state.typeList.map(tag => (
+              {this.props.typeList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.typeTags.indexOf(tag) > -1}
+                  checked={this.props.typeTags.indexOf(tag) > -1}
                   onChange={checked => this.handleTypeSelect(tag, checked)}
                 >
                   {tag}
@@ -165,10 +158,10 @@ class Scenes extends React.Component {
               特点：
             </Col>
             <Col span={20}>
-              {this.state.characList.map(tag => (
+              {this.props.characList.map(tag => (
                 <CheckableTag
                   key={tag}
-                  checked={this.state.characTags.indexOf(tag) > -1}
+                  checked={this.props.characTags.indexOf(tag) > -1}
                   onChange={checked => this.handleCharacSelect(tag, checked)}
                 >
                   {tag}
@@ -180,7 +173,7 @@ class Scenes extends React.Component {
         </div>
         <Divider />
         <div className="actorList">
-          {this.state.scenesList.map(item => (
+          {this.props.scenesList.map(item => (
             <div key={item.id} className={styles.scenesPic}>
               <Link className={styles.scenesPicContainer} to={{pathname: `scenes/${item.id}`, query: {imgUrl: item.imgPath}}}>
                 <img className={styles.pic} src={item.imgPath} alt="" />
@@ -192,11 +185,11 @@ class Scenes extends React.Component {
         <div className={styles.block}>
         <Pagination
             showQuickJumper
-            current={this.state.pageNum}
-            pageSize={this.state.pageSize}
+            current={this.props.pageNum}
+            pageSize={this.props.pageSize}
             showTotal={total => `共 ${total} 条结果`}
             defaultCurrent={1}
-            total={this.state.total}
+            total={this.props.total}
             onChange={this.handlePageChange} />
         </div>
       </div>
@@ -204,4 +197,78 @@ class Scenes extends React.Component {
   }
 }
 
-export default Scenes
+const mapStateToProps = (state) => {
+  const {
+    propTags,
+    timeTags,
+    typeTags,
+    characTags,
+    propsList,
+    timeList,
+    typeList,
+    characList,
+    // 搜索结果
+    scenesList,
+    pageNum,
+    pageSize,
+    total
+  } = state.scenesReducer
+  return {
+    propTags,
+    timeTags,
+    typeTags,
+    characTags,
+    propsList,
+    timeList,
+    typeList,
+    characList,
+    // 搜索结果
+    scenesList,
+    pageNum,
+    pageSize,
+    total
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setPropTags (data) {
+      dispatch(ActionCreator.setPropTags(data))
+    },
+    setTimeTags (data) {
+      dispatch(ActionCreator.setTimeTags(data))
+    },
+    setTypeTags (data) {
+      dispatch(ActionCreator.setTypeTags(data))
+    },
+    setCharacTags (data) {
+      dispatch(ActionCreator.setCharacTags(data))
+    },
+    setPropsList (data) {
+      dispatch(ActionCreator.setPropsList(data))
+    },
+    setTimeList (data) {
+      dispatch(ActionCreator.setTimeList(data))
+    },
+    setTypeList (data) {
+      dispatch(ActionCreator.setTypeList(data))
+    },
+    setCharacList (data) {
+      dispatch(ActionCreator.setCharacList(data))
+    },
+    setScenesList (data) {
+      dispatch(ActionCreator.setScenesList(data))
+    },
+    setPageNum (data) {
+      dispatch(ActionCreator.setPageNum(data))
+    },
+    setPageSize (data) {
+      dispatch(ActionCreator.setPageSize(data))
+    },
+    setTotal (data) {
+      dispatch(ActionCreator.setTotal(data))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Scenes)
